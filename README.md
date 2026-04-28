@@ -25,16 +25,20 @@ Ensure you have the following installed:
 2. Clone the repository:
    
    git clone (https://github.com/RoyalPreshoss/Zedu_api_automation)
+
    cd Zedu_api_automation
 
 3. Install the Dependencies
-Run the following command to install Jest, Axios and Dotenv
+Run the following command to install Jest, Axios and Dotenv:
+
     npm install
 
 4. Environment Configuration
 
 ​The project uses a .env file to manage sensitive data. 
+
 ​Create a new file named .env in the root folder. 
+
 ​Copy the following variables and provide your actual testing credentials: 
 
 BASE_URL=https://staging.zedu.com/api/v1
