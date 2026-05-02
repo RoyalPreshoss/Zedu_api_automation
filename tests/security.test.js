@@ -40,8 +40,7 @@ describe('Zedu Security (TSC-012 to TSC-016)', () => {
 
     test('TSC-015: Edge - Access with lowercase "bearer"', async () => {
         try {
-            // Some APIs are case-sensitive, others are not. 
-            // We expect 401 if the standard requires 'Bearer'
+           
             await axios.get(url, { headers: { Authorization: "bearer fake-token" } });
         } catch (e) {
             if (e.response) {

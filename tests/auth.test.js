@@ -27,8 +27,7 @@ describe('Registration Module (TSC-001 to TSC-005)', () => {
     test('TSC-002: Verify registration when fields are empty', async () => {
         try {
             const res = await axios.post(url, {});
-            // BUG TRAP: API should not reach here with 200/201. 
-            // If it does, this line will fail the test as it should.
+           
             expect([400, 422]).toContain(res.status);
         } catch (e) {
             if (e.response) {
@@ -40,7 +39,7 @@ describe('Registration Module (TSC-001 to TSC-005)', () => {
     test('TSC-003: Verify registration with an invalid email format', async () => {
         try {
             const res = await axios.post(url, generateUser({ email: "invalid-mail" }));
-            // BUG TRAP: If API returns 201 Created for a bad email, this fails the test.
+           
             expect([400, 422]).toContain(res.status);
         } catch (e) {
             if (e.response) {
@@ -65,7 +64,7 @@ describe('Registration Module (TSC-001 to TSC-005)', () => {
     test('TSC-005: Verify registration with a valid email and an empty password field', async () => {
         try {
             const res = await axios.post(url, generateUser({ password: "" }));
-            // BUG TRAP: If API returns 201 Created for no password, this fails the test.
+           
             expect([400, 422]).toContain(res.status);
         } catch (e) {
             if (e.response) {

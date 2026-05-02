@@ -52,8 +52,7 @@ describe('Registration Module (TSC-001 to TSC-005)', () => {
         const payload = generateUser({ email: process.env.USER_EMAIL });
         try {
             const res = await axios.post(url, payload);
-            // BUG TRAP: API should reject duplicate emails. 
-            // If it returns 200 (BUG), this assertion fails.
+            
             expect([400, 409, 422]).toContain(res.status); 
         } catch (e) {
             if (e.response) {
@@ -65,7 +64,7 @@ describe('Registration Module (TSC-001 to TSC-005)', () => {
     test('TSC-005: Negative - Empty password field', async () => {
         try {
             const res = await axios.post(url, generateUser({ password: "" }));
-            // BUG TRAP: API should reject registration without a password.
+            
             expect([400, 422]).toContain(res.status);
         } catch (e) {
             if (e.response) {

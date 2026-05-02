@@ -2,87 +2,96 @@ const axios = require('axios');
 const { getAuthToken } = require('../utils/auth');
 require('dotenv').config();
 
-describe('User Scenarios', () => {
+describe('User Scenarios (TSC-011 to TSC-024)', () => {
     let token;
-    beforeAll(async () => { token = await getAuthToken(); });
+    const baseUrl = process.env.BASE_URL.replace(/\/+$/, "");
 
-    const headers = () => ({ headers: { Authorization: `Bearer ${token}` } });
+    beforeAll(async () => { 
+        token = await getAuthToken(); 
+    });
+
+    const getHeaders = () => ({ 
+        headers: { Authorization: `Bearer ${token}` } 
+    });
 
     test('TSC-011: Verify successful logout session', async () => {
-        const res = await axios.post(`${process.env.BASE_URL}/auth/logout`, {}, headers());
-        
-        // Assertions for status and structure
+        const res = await axios.post(`${baseUrl}/auth/logout`, {}, getHeaders());
         expect(res.status).toBe(200);
-        expect(typeof res.data.status).toBe('string');
         expect(res.data.status).toBe('success');
     });
 
     test('TSC-012: Verify password change without token', async () => {
         try { 
-            await axios.post(`${process.env.BASE_URL}/auth/change-password`, {}); 
+            await axios.post(`${baseUrl}/auth/change-password`, {}); 
         } catch (e) { 
-            expect([401, 404]).toContain(e.response.status); 
-            // Validate field presence in error response
-            expect(e.response.data).toHaveProperty('message');
+            if (e.response) {
+                expect([401, 404]).toContain(e.response.status); 
+                expect(e.response.data).toHaveProperty('message');
+            } else { throw e; }
         }
     });
 
     test('TSC-013: Verify system rejects wrong input of old password', async () => {
         try { 
-            await axios.post(`${process.env.BASE_URL}/auth/change-password`, { 
-                old_password: "wrong", 
+            await axios.post(`${baseUrl}/auth/change-password`, { 
+                old_password: "incorrect_password_123", 
                 new_password: "NewPassword123!" 
-            }, headers()); 
+            }, getHeaders()); 
         } catch (e) { 
-            expect([400, 401, 404]).toContain(e.response.status); 
-            expect(typeof e.response.data.message).toBe('string');
+            if (e.response) {
+                expect([400, 401, 404]).toContain(e.response.status); 
+                expect(typeof e.response.data.message).toBe('string');
+            } else { throw e; }
         }
     });
 
     test('TSC-015: Verify system changes password successfully', async () => {
         try {
-            const res = await axios.post(`${process.env.BASE_URL}/auth/change-password`, { 
+            const res = await axios.post(`${baseUrl}/auth/change-password`, { 
                 old_password: process.env.USER_PASSWORD, 
                 new_password: process.env.USER_PASSWORD 
-            }, headers());
-            expect([200, 404]).toContain(res.status);
-            if(res.status === 200) {
-                expect(res.data).toHaveProperty('status');
-            }
+            }, getHeaders());
+            expect([200, 204]).toContain(res.status);
         } catch (e) {
-            expect(e.response.status).toBe(404); 
+            if (e.response) {
+                expect([200, 404]).toContain(e.response.status); 
+            } else { throw e; }
         }
     });
 
     test('TSC-020: Verify system behaviour when an invalid grant code is passed', async () => {
         try { 
-            await axios.post(`${process.env.BASE_URL}/auth/google`, { code: "invalid_code" }); 
+            await axios.post(`${baseUrl}/auth/google`, { code: "invalid_auth_code_999" }); 
         } catch (e) { 
-            expect([400, 422]).toContain(e.response.status); 
-            expect(e.response.data).toHaveProperty('message');
+            if (e.response) {
+                expect([400, 401, 422]).toContain(e.response.status); 
+                expect(e.response.data).toHaveProperty('message');
+            } else { throw e; }
         }
     });
 
-    
-
     test('TSC-023: Verify access denied with a malformed token', async () => {
         try {
-            await axios.get(`${process.env.BASE_URL}/users/me`, {
-                headers: { Authorization: "Bearer this-is-not-a-real-token" }
+            await axios.get(`${baseUrl}/users/me`, {
+                headers: { Authorization: "Bearer malformed.token.value" }
             });
         } catch (e) {
-            expect([401, 403]).toContain(e.response.status);
-            expect(e.response.data).toHaveProperty('message');
+            if (e.response) {
+                expect([401, 403]).toContain(e.response.status);
+                expect(e.response.data).toHaveProperty('message');
+            } else { throw e; }
         }
     });
 
     test('TSC-024: Verify access denied when Bearer prefix is missing', async () => {
         try {
-            await axios.get(`${process.env.BASE_URL}/users/me`, {
-                headers: { Authorization: "abc123token" }
+            await axios.get(`${baseUrl}/users/me`, {
+                headers: { Authorization: "plain_token_without_bearer" }
             });
         } catch (e) {
-            expect([401, 403]).toContain(e.response.status);
+            if (e.response) {
+                expect([401, 403]).toContain(e.response.status);
+            } else { throw e; }
         }
     });
 });

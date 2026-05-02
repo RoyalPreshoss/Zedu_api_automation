@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "description": "API Automation for Zedu Project - HNG Stage 3",
   "main": "index.js",
-  "scripts": {
-    "test": "jest --runInBand --forceExit --detectOpenHandles"
+ "scripts": {
+  "test": "jest --ci --runInBand --forceExit --detectOpenHandles"
   },
   "jest": {
     "testTimeout": 30000
