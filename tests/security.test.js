@@ -1,26 +1,63 @@
 const axios = require('axios');
 require('dotenv').config();
 
-describe('Zedu Security (5 Tests)', () => {
-    const url = `${process.env.BASE_URL}/users/me`;
+describe('Zedu Security (TSC-012 to TSC-016)', () => {
+    const baseUrl = process.env.BASE_URL.replace(/\/+$/, "");
+    const url = `${baseUrl}/users/me`;
 
     test('TSC-012: Negative - Access without Authorization header', async () => {
-        try { await axios.get(url); } catch (e) { expect(e.response.status).toBe(401); }
+        try {
+            await axios.get(url);
+            throw new Error('Security Breach: Access allowed without header');
+        } catch (e) {
+            if (e.response) {
+                expect(e.response.status).toBe(401);
+            } else { throw e; }
+        }
     });
 
-    test('Negative - Malformed token (No Bearer)', async () => {
-        try { await axios.get(url, { headers: { Authorization: "token123" } }); } catch (e) { expect(e.response.status).toBe(401); }
+    test('TSC-013: Negative - Malformed token (No Bearer prefix)', async () => {
+        try {
+            await axios.get(url, { headers: { Authorization: "token123" } });
+            throw new Error('Security Breach: Access allowed with malformed token');
+        } catch (e) {
+            if (e.response) {
+                expect(e.response.status).toBe(401);
+            } else { throw e; }
+        }
     });
 
-    test('Negative - Invalid Bearer token string', async () => {
-        try { await axios.get(url, { headers: { Authorization: "Bearer wrong.token.value" } }); } catch (e) { expect(e.response.status).toBe(401); }
+    test('TSC-014: Negative - Invalid Bearer token string', async () => {
+        try {
+            await axios.get(url, { headers: { Authorization: "Bearer wrong.token.value" } });
+            throw new Error('Security Breach: Access allowed with invalid token');
+        } catch (e) {
+            if (e.response) {
+                expect(e.response.status).toBe(401);
+            } else { throw e; }
+        }
     });
 
-    test('Edge - Access with lowercase "bearer"', async () => {
-        try { await axios.get(url, { headers: { Authorization: "bearer fake-token" } }); } catch (e) { expect(e.response.status).toBe(401); }
+    test('TSC-015: Edge - Access with lowercase "bearer"', async () => {
+        try {
+            // Some APIs are case-sensitive, others are not. 
+            // We expect 401 if the standard requires 'Bearer'
+            await axios.get(url, { headers: { Authorization: "bearer fake-token" } });
+        } catch (e) {
+            if (e.response) {
+                expect(e.response.status).toBe(401);
+            } else { throw e; }
+        }
     });
 
-    test('Edge - Empty Authorization string', async () => {
-        try { await axios.get(url, { headers: { Authorization: "" } }); } catch (e) { expect(e.response.status).toBe(401); }
+    test('TSC-016: Edge - Empty Authorization string', async () => {
+        try {
+            await axios.get(url, { headers: { Authorization: "" } });
+            throw new Error('Security Breach: Access allowed with empty auth string');
+        } catch (e) {
+            if (e.response) {
+                expect(e.response.status).toBe(401);
+            } else { throw e; }
+        }
     });
 });

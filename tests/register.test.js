@@ -1,46 +1,76 @@
 const axios = require('axios');
 require('dotenv').config();
 
-// Increase global timeout for slow API responses
-jest.setTimeout(30000); 
-
-describe('Registration Module', () => {
-    // Sanitize URL to prevent double slashes
+describe('Registration Module (TSC-001 to TSC-005)', () => {
     const baseUrl = process.env.BASE_URL.replace(/\/+$/, "");
     const url = `${baseUrl}/auth/register`;
 
-    const getFreshUserData = () => {
-        const id = Date.now();
+    const generateUser = (overrides = {}) => {
+        const uniqueId = Date.now();
         return {
-            username: `user_${id}`,
-            email: `test_${id}@zedu.com`,
+            email: `user_${uniqueId}@zedu.chat`,
             password: process.env.USER_PASSWORD,
-            first_name: process.env.USER_FIRSTNAME,
-            last_name: process.env.USER_LASTNAME,
-            phone_number: `234${id.toString().slice(-10)}`
+            firstName: `First_${uniqueId}`,
+            lastName: `Last_${uniqueId}`,
+            phone: `080${Math.floor(10000000 + Math.random() * 90000000)}`,
+            ...overrides
         };
     };
 
-    test('TSC-001: Verify registration with valid credentials', async () => {
-        const payload = getFreshUserData();
+    test('TSC-001: Success - Valid credentials', async () => {
+        const payload = generateUser();
+        const res = await axios.post(url, payload);
+        expect(res.status).toBe(201);
+        expect(res.data.status).toBe("success");
+    });
+
+    test('TSC-002: Negative - Empty payload', async () => {
+        try {
+            const res = await axios.post(url, {});
+        
+            expect([400, 422]).toContain(res.status);
+        } catch (e) {
+            if (e.response) {
+                expect([400, 422]).toContain(e.response.status);
+            } else { throw e; }
+        }
+    });
+
+    test('TSC-003: Negative - Invalid email format', async () => {
+        try {
+            const res = await axios.post(url, generateUser({ email: "invalid-mail" }));
+          
+            expect([400, 422]).toContain(res.status); 
+        } catch (e) {
+            if (e.response) {
+                expect([400, 422]).toContain(e.response.status);
+            } else { throw e; }
+        }
+    });
+
+    test('TSC-004: Negative - Existing email', async () => {
+        const payload = generateUser({ email: process.env.USER_EMAIL });
         try {
             const res = await axios.post(url, payload);
-            expect(res.status).toBe(201);
-            expect(res.data.data.user).toHaveProperty('id');
+            // BUG TRAP: API should reject duplicate emails. 
+            // If it returns 200 (BUG), this assertion fails.
+            expect([400, 409, 422]).toContain(res.status); 
         } catch (e) {
-            // This will now log even if the error is a timeout or 500 error
-            console.error('Registration Error Details:', e.response?.data || e.message);
-            throw e;
+            if (e.response) {
+                expect([400, 409, 422]).toContain(e.response.status);
+            } else { throw e; }
         }
     });
 
-    test('TSC-002: Verify registration when fields are empty', async () => {
-        try { 
-            await axios.post(url, {}); 
-        } catch (e) { 
-            expect([400, 422]).toContain(e.response?.status); 
+    test('TSC-005: Negative - Empty password field', async () => {
+        try {
+            const res = await axios.post(url, generateUser({ password: "" }));
+            // BUG TRAP: API should reject registration without a password.
+            expect([400, 422]).toContain(res.status);
+        } catch (e) {
+            if (e.response) {
+                expect([400, 422]).toContain(e.response.status);
+            } else { throw e; }
         }
     });
-
-    // ... TSC-003 to 005 follow same structure
 });

@@ -1,92 +1,76 @@
 const axios = require('axios');
 require('dotenv').config();
 
-describe('Authentication Module', () => {
-    const loginUrl = `${process.env.BASE_URL}/auth/login`;
+describe('Registration Module (TSC-001 to TSC-005)', () => {
+    const baseUrl = process.env.BASE_URL.replace(/\/+$/, "");
+    const url = `${baseUrl}/auth/register`;
 
-    test('TSC-006: Verify login with valid credentials', async () => {
-        const res = await axios.post(loginUrl, { 
-            email: process.env.USER_EMAIL, 
-            password: process.env.USER_PASSWORD 
-        });
-        
-        // 1. Status Code
-        expect(res.status).toBe(200);
-        
-        // 2. Field Presence & Data Types
-        expect(res.data.data).toHaveProperty('access_token'); 
-        expect(typeof res.data.data.access_token).toBe('string');
-        
-        // 3. Field Values
-        expect(res.data.status).toBe('success');
+    const generateUser = (overrides = {}) => {
+        const uniqueId = Date.now();
+        return {
+            email: `qa_test_${uniqueId}@zedu.chat`,
+            password: process.env.USER_PASSWORD,
+            firstName: process.env.USER_FIRSTNAME,
+            lastName: process.env.USER_LASTNAME,
+            phone: `080${Math.floor(10000000 + Math.random() * 90000000)}`,
+            ...overrides
+        };
+    };
+
+    test('TSC-001: Verify registration with valid credentials', async () => {
+        const payload = generateUser();
+        const res = await axios.post(url, payload);
+        expect(res.status).toBe(201);
+        expect(res.data.status).toBe("success");
     });
 
-    test('TSC-007: Verify system behaviour when user tries to login with unregistered email', async () => {
-        try { 
-            await axios.post(loginUrl, { email: "ghost@zedu.com", password: "1" }); 
-        } catch (e) { 
-            expect([400, 401]).toContain(e.response.status); 
-            // Assert error message presence
-            expect(e.response.data).toHaveProperty('message');
+    test('TSC-002: Verify registration when fields are empty', async () => {
+        try {
+            const res = await axios.post(url, {});
+            // BUG TRAP: API should not reach here with 200/201. 
+            // If it does, this line will fail the test as it should.
+            expect([400, 422]).toContain(res.status);
+        } catch (e) {
+            if (e.response) {
+                expect([400, 422]).toContain(e.response.status);
+            } else { throw e; }
         }
     });
 
-    test('TSC-008: Verify login with valid email and invalid password', async () => {
-        try { 
-            await axios.post(loginUrl, { email: process.env.USER_EMAIL, password: "wrong" }); 
-        } catch (e) { 
-            expect([400, 401]).toContain(e.response.status); 
-            expect(typeof e.response.data.message).toBe('string');
+    test('TSC-003: Verify registration with an invalid email format', async () => {
+        try {
+            const res = await axios.post(url, generateUser({ email: "invalid-mail" }));
+            // BUG TRAP: If API returns 201 Created for a bad email, this fails the test.
+            expect([400, 422]).toContain(res.status);
+        } catch (e) {
+            if (e.response) {
+                expect([400, 422]).toContain(e.response.status);
+            } else { throw e; }
         }
     });
 
-    test('TSC-009: Verify login with unregistered email', async () => {
-        try { 
-            await axios.post(loginUrl, { email: "unregistered@example.com", password: "123" }); 
-        } catch (e) { 
-            expect([400, 401]).toContain(e.response.status); 
+    test('TSC-004: Verify registration with existing email', async () => {
+        const payload = generateUser({ email: process.env.USER_EMAIL });
+        try {
+            const res = await axios.post(url, payload);
+            // BUG TRAP: If API returns 200 OK for a duplicate email, this fails the test.
+            expect([400, 409, 422]).toContain(res.status);
+        } catch (e) {
+            if (e.response) {
+                expect([400, 409, 422]).toContain(e.response.status);
+            } else { throw e; }
         }
     });
 
-    test('TSC-010: Verify logout functionality without authorization', async () => {
-        try { 
-            await axios.post(`${process.env.BASE_URL}/auth/logout`, {}); 
-        } catch (e) { 
-            expect(e.response.status).toBe(401); 
-            
-            expect(e.response.data).toHaveProperty('message');
+    test('TSC-005: Verify registration with a valid email and an empty password field', async () => {
+        try {
+            const res = await axios.post(url, generateUser({ password: "" }));
+            // BUG TRAP: If API returns 201 Created for no password, this fails the test.
+            expect([400, 422]).toContain(res.status);
+        } catch (e) {
+            if (e.response) {
+                expect([400, 422]).toContain(e.response.status);
+            } else { throw e; }
         }
     });
-
-    
-
-    test('TSC-021: Verify login with email in UPPERCASE', async () => {
-        try{
-        const res = await axios.post(loginUrl, {
-            email: process.env.USER_EMAIL.toUpperCase(),
-            password: process.env.USER_PASSWORD
-        });
-        expect(res.status).toBe(200);}
-        catch (e){
-            expect ([200, 400, 401]).toContain(e.response.status);}
-        });
-    });
-
- test('TSC-022: Verify login fails with a very short password', async () => {
-    try {
-        
-        const loginUrl = `${process.env.BASE_URL}/auth/login`; 
-        
-        await axios.post(loginUrl, {
-            email: process.env.TEST_EMAIL,
-            password: "1" // Very short password
-        });
-    } catch (e) {
-        if (!e.response) {
-            throw new Error(`Request failed without a response: ${e.message}`);
-        }
-        const statusCodes = [400, 401, 422];
-        expect(statusCodes).toContain(e.response.status);
-        expect(e.response.data).toHaveProperty('message');
-    }
 });

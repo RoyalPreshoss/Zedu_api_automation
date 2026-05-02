@@ -1,11 +1,14 @@
 {
   "name": "zedu_api_automation",
   "version": "1.0.0",
-  "description": "",
+  "description": "API Automation for Zedu Project - HNG Stage 3",
   "main": "index.js",
   "scripts": {
-  "test": "jest"
-},
+    "test": "jest --runInBand --forceExit --detectOpenHandles"
+  },
+  "jest": {
+    "testTimeout": 30000
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
