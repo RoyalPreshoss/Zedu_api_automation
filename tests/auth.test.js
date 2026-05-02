@@ -1,5 +1,5 @@
 const axios = require('axios');
-require('dotenv').config();
+require('dotenv').config({ silent: true });
 
 describe('Registration Module (TSC-001 to TSC-005)', () => {
     const baseUrl = process.env.BASE_URL.replace(/\/+$/, "");
