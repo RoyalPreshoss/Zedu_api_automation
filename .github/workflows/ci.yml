@@ -25,7 +25,7 @@ jobs:
         run: npm install
 
       - name: Execute Tests
-        run: npm test
+        run: npm test -- --runInBand
         env:
           BASE_URL: ${{ secrets.BASE_URL }}
           USER_EMAIL: ${{ secrets.USER_EMAIL }}
