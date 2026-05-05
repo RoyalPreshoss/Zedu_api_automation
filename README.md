@@ -35,7 +35,7 @@ ________________________________________
 ├── .env.example        # Template for environment variables
 └── package.json        # Dependencies and test scripts
 ________________________________________
-Setup and Installation
+Setup and Installation.
 
 1. Prerequisites
 •	Node.js: v18.x or higher
