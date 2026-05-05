@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="jest tests" tests="17" failures="2" errors="0" time="21.446">
+  <testsuite name="User Scenarios (TSC-011 to TSC-024)" errors="0" failures="1" skipped="0" timestamp="2026-05-05T14:25:12" time="9.618" tests="6">
+    <testcase classname="User Scenarios (TSC-011 to TSC-024) TSC-012: Verify password change without token" name="User Scenarios (TSC-011 to TSC-024) TSC-012: Verify password change without token" time="0.877">
+    </testcase>
+    <testcase classname="User Scenarios (TSC-011 to TSC-024) TSC-013: Verify system rejects wrong input of old password" name="User Scenarios (TSC-011 to TSC-024) TSC-013: Verify system rejects wrong input of old password" time="0.919">
+    </testcase>
+    <testcase classname="User Scenarios (TSC-011 to TSC-024) TSC-015: Verify system changes password successfully" name="User Scenarios (TSC-011 to TSC-024) TSC-015: Verify system changes password successfully" time="1.683">
+    </testcase>
+    <testcase classname="User Scenarios (TSC-011 to TSC-024) TSC-021: Verify login with email in UPPERCASE" name="User Scenarios (TSC-011 to TSC-024) TSC-021: Verify login with email in UPPERCASE" time="0.662">
+      <failure>AxiosError: Request failed with status code 400
+    at settle (C:\Users\HP USER\Desktop\Zedu_api_automation\node_modules\axios\lib\core\settle.js:20:7)
+    at Unzip.settle (C:\Users\HP USER\Desktop\Zedu_api_automation\node_modules\axios\lib\adapters\http.js:921:13)
+    at Unzip.emit (node:events:513:28)
+    at endReadableNT (node:internal/streams/readable:1359:12)
+    at processTicksAndRejections (node:internal/process/task_queues:82:21)
+    at Axios.captureStackTrace [as request] (C:\Users\HP USER\Desktop\Zedu_api_automation\node_modules\axios\lib\core\Axios.js:46:41)
+    at processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at Object.&lt;anonymous&gt; (C:\Users\HP USER\Desktop\Zedu_api_automation\tests\users.test.js:60:21)</failure>
+    </testcase>
+    <testcase classname="User Scenarios (TSC-011 to TSC-024) TSC-023: Verify access denied with a malformed token" name="User Scenarios (TSC-011 to TSC-024) TSC-023: Verify access denied with a malformed token" time="0.864">
+    </testcase>
+    <testcase classname="User Scenarios (TSC-011 to TSC-024) TSC-011: Verify successful logout session" name="User Scenarios (TSC-011 to TSC-024) TSC-011: Verify successful logout session" time="0.699">
+    </testcase>
+  </testsuite>
+  <testsuite name="Registration Module (TSC-001 to TSC-005)" errors="0" failures="1" skipped="0" timestamp="2026-05-05T14:25:21" time="3.557" tests="2">
+    <testcase classname="Registration Module (TSC-001 to TSC-005) TSC-001: Verify registration with valid data" name="Registration Module (TSC-001 to TSC-005) TSC-001: Verify registration with valid data" time="2.19">
+    </testcase>
+    <testcase classname="Registration Module (TSC-001 to TSC-005) TSC-004: Negative - Existing email" name="Registration Module (TSC-001 to TSC-005) TSC-004: Negative - Existing email" time="1.011">
+      <failure>Error: API allowed duplicate email registration
+    at Object.&lt;anonymous&gt; (C:\Users\HP USER\Desktop\Zedu_api_automation\tests\register.test.js:29:19)
+    at processTicksAndRejections (node:internal/process/task_queues:95:5)</failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="Zedu Security (TSC-012 to TSC-016)" errors="0" failures="0" skipped="0" timestamp="2026-05-05T14:25:25" time="4.258" tests="5">
+    <testcase classname="Zedu Security (TSC-012 to TSC-016) TSC-012: Negative - Access without Authorization header" name="Zedu Security (TSC-012 to TSC-016) TSC-012: Negative - Access without Authorization header" time="0.833">
+    </testcase>
+    <testcase classname="Zedu Security (TSC-012 to TSC-016) TSC-013: Negative - Malformed token (No Bearer prefix)" name="Zedu Security (TSC-012 to TSC-016) TSC-013: Negative - Malformed token (No Bearer prefix)" time="0.717">
+    </testcase>
+    <testcase classname="Zedu Security (TSC-012 to TSC-016) TSC-014: Negative - Invalid Bearer token string" name="Zedu Security (TSC-012 to TSC-016) TSC-014: Negative - Invalid Bearer token string" time="0.637">
+    </testcase>
+    <testcase classname="Zedu Security (TSC-012 to TSC-016) TSC-015: Edge - Access with lowercase &quot;bearer&quot;" name="Zedu Security (TSC-012 to TSC-016) TSC-015: Edge - Access with lowercase &quot;bearer&quot;" time="0.723">
+    </testcase>
+    <testcase classname="Zedu Security (TSC-012 to TSC-016) TSC-016: Edge - Empty Authorization string" name="Zedu Security (TSC-012 to TSC-016) TSC-016: Edge - Empty Authorization string" time="1.059">
+    </testcase>
+  </testsuite>
+  <testsuite name="Authentication Module (TSC-006 - TSC-011, TSC-020)" errors="0" failures="0" skipped="0" timestamp="2026-05-05T14:25:29" time="3.559" tests="4">
+    <testcase classname="Authentication Module (TSC-006 - TSC-011, TSC-020) TSC-006: Verify login with valid credentials" name="Authentication Module (TSC-006 - TSC-011, TSC-020) TSC-006: Verify login with valid credentials" time="1.011">
+    </testcase>
+    <testcase classname="Authentication Module (TSC-006 - TSC-011, TSC-020) TSC-007: Verify system behaviour when user tries to login with unregistered email" name="Authentication Module (TSC-006 - TSC-011, TSC-020) TSC-007: Verify system behaviour when user tries to login with unregistered email" time="0.774">
+    </testcase>
+    <testcase classname="Authentication Module (TSC-006 - TSC-011, TSC-020) TSC-008: Verify login with valid email and invalid password" name="Authentication Module (TSC-006 - TSC-011, TSC-020) TSC-008: Verify login with valid email and invalid password" time="0.777">
+    </testcase>
+    <testcase classname="Authentication Module (TSC-006 - TSC-011, TSC-020) TSC-020: Verify system behaviour when an invalid grant code is passed" name="Authentication Module (TSC-006 - TSC-011, TSC-020) TSC-020: Verify system behaviour when an invalid grant code is passed" time="0.724">
+    </testcase>
+  </testsuite>
+</testsuites>

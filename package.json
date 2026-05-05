@@ -1,10 +1,11 @@
 {
   "name": "zedu_api_automation",
   "version": "1.0.0",
-  "description": "API Automation for Zedu Project - HNG Stage 3",
+  "description": "API Automation for Zedu Project - HNG Stage 4",
   "main": "index.js",
- "scripts": {
-  "test": "jest --ci --runInBand --forceExit --detectOpenHandles"
+  "scripts": {
+    "test": "jest --runInBand --forceExit --detectOpenHandles",
+    "test:ci": "jest --ci --runInBand --forceExit --reporters=default --reporters=jest-junit"
   },
   "jest": {
     "testTimeout": 30000
@@ -16,5 +17,8 @@
     "axios": "^1.15.2",
     "dotenv": "^17.4.2",
     "jest": "^30.3.0"
+  },
+  "devDependencies": {
+    "jest-junit": "^17.0.0"
   }
 }

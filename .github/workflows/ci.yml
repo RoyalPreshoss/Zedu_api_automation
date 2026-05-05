@@ -25,7 +25,7 @@ jobs:
         run: npm install
 
       - name: Execute Tests
-        run: npm test -- --runInBand
+        run: npm run test:ci
         env:
           BASE_URL: ${{ secrets.BASE_URL }}
           USER_EMAIL: ${{ secrets.USER_EMAIL }}
@@ -34,3 +34,10 @@ jobs:
           USER_LASTNAME: ${{ secrets.USER_LASTNAME }}
           USER_PHONE: ${{ secrets.USER_PHONE }}
           USER_USERNAME: ${{ secrets.USER_USERNAME }}
+
+      - name: Upload Test Report Artifact
+        if: always() # This ensures the report is uploaded even if tests fail
+        uses: actions/upload-artifact@v4
+        with:
+          name: junit-report
+          path: junit.xml
